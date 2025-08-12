@@ -1,14 +1,16 @@
-import posthog from 'posthog-js';
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import posthog from 'posthog-js'
 
 export function initPosthog() {
-  if (typeof window === 'undefined') return; // don't run on server
-  if ((posthog as any).__loaded) return; // avoid double init during HMR
-
-  posthog.init(process.env.NEXT_PUBLIC_POSTHOG_KEY || '', {
-    api_host: process.env.NEXT_PUBLIC_POSTHOG_HOST,
-    capture_pageview: true,
-    capture_pageleave: true,
-  });
+  if (typeof window !== 'undefined' && process.env.NEXT_PUBLIC_POSTHOG_KEY) {
+    posthog.init(process.env.NEXT_PUBLIC_POSTHOG_KEY, {
+      api_host: process.env.NEXT_PUBLIC_POSTHOG_HOST || 'https://app.posthog.com',
+    })
+  }
 }
 
-export default posthog;
+export function captureEvent(eventName: string, properties?: Record<string, any>) {
+  if (typeof window !== 'undefined') {
+    posthog.capture(eventName, properties)
+  }
+}
