@@ -22,6 +22,16 @@ export default function RootLayout({
     initPosthog();
     posthog.capture('$pageview');
   }, []);
+useEffect(() => {
+  initPosthog();
+  posthog.capture('$pageview');
+  posthog.capture('test_event', { property: 'value' }); // test event
+}, []);
+useEffect(() => {
+  initPosthog();
+  posthog.capture('$pageview');
+  posthog.capture('test_event', { property: 'value' }); // test event
+}, []);
 
   return (
     <html lang="en">
