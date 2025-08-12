@@ -1,12 +1,8 @@
-'use client';
-
-import { Metadata } from 'next';
+import type { Metadata } from 'next';
 import { GeistSans } from 'geist/font/sans';
 import { GeistMono } from 'geist/font/mono';
 import './globals.css';
-import { useEffect } from 'react';
-import { initPosthog } from '@/lib/posthog';
-import posthog from 'posthog-js';
+import Analytics from '@/components/Analytics';
 
 export const metadata: Metadata = {
   title: 'Create Next App',
@@ -14,15 +10,10 @@ export const metadata: Metadata = {
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
-  useEffect(() => {
-    initPosthog();
-    posthog.capture('pageview');
-    posthog.capture('test_event', { property: 'value' }); // test event
-  }, []);
-
   return (
     <html lang="en">
       <body className={`${GeistSans.variable} ${GeistMono.variable} antialiased`}>
+        <Analytics />
         {children}
       </body>
     </html>
