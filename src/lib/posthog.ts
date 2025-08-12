@@ -1,16 +1,21 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-import posthog from 'posthog-js'
+import posthog from 'posthog-js';
+
+type PHProps = Record<string, string | number | boolean | null | undefined>;
+
+let loaded = false;
 
 export function initPosthog() {
-  if (typeof window !== 'undefined' && process.env.NEXT_PUBLIC_POSTHOG_KEY) {
-    posthog.init(process.env.NEXT_PUBLIC_POSTHOG_KEY, {
-      api_host: process.env.NEXT_PUBLIC_POSTHOG_HOST || 'https://app.posthog.com',
-    })
-  }
+  if (typeof window === 'undefined' || loaded) return;
+  const key = process.env.NEXT_PUBLIC_POSTHOG_KEY;
+  const host = process.env.NEXT_PUBLIC_POSTHOG_HOST ?? 'https://us.i.posthog.com';
+  if (!key) return; // no-op if not configured
+  posthog.init(key, { api_host: host, capture_pageview: false }); // we’ll capture manually
+  loaded = true;
 }
 
-export function captureEvent(eventName: string, properties?: Record<string, any>) {
-  if (typeof window !== 'undefined') {
-    posthog.capture(eventName, properties)
-  }
+export function captureEvent(name: string, properties?: PHProps) {
+  if (typeof window === 'undefined') return;
+  posthog.capture(name, properties);
 }
+
+export default posthog;
