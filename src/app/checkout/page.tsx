@@ -1,16 +1,15 @@
 import { Suspense } from "react";
-import CheckoutClient from "./checkoutClient";
+import CheckoutClient from "./CheckoutClient";
 
-type SearchParams = { [key: string]: string | string[] | undefined };
+type SearchParamsObj = { [key: string]: string | string[] | undefined };
 
-export default function CheckoutPage({
-  searchParams,
-}: {
-  searchParams: SearchParams;
-}) {
-  const raw = searchParams.plan;
-  const plan =
-    (Array.isArray(raw) ? raw[0] : raw) === "pro" ? "pro" : "starter";
+interface PageProps {
+  searchParams?: SearchParamsObj; // must be optional to match Next typing
+}
+
+export default function CheckoutPage({ searchParams }: PageProps) {
+  const raw = searchParams?.plan;
+  const plan = (Array.isArray(raw) ? raw[0] : raw) === "pro" ? "pro" : "starter";
 
   return (
     <Suspense fallback={<div>Loading…</div>}>
