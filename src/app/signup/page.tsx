@@ -3,11 +3,11 @@
 import { useRef } from 'react';
 import { captureEvent } from '@/lib/posthog';
 
-type PageProps = {
+export default function SignupPage({
+  searchParams,
+}: {
   searchParams?: { [key: string]: string | string[] | undefined };
-};
-
-export default function SignupPage({ searchParams }: PageProps) {
+}) {
   const raw = searchParams?.['plan'];
   const plan = Array.isArray(raw) ? raw[0] : (raw ?? 'starter');
 
@@ -22,6 +22,7 @@ export default function SignupPage({ searchParams }: PageProps) {
       });
     }
   }
+
   function onSubmit(e: React.FormEvent) {
     e.preventDefault();
     captureEvent('signup_completed', { method: 'email', plan });
@@ -34,10 +35,13 @@ export default function SignupPage({ searchParams }: PageProps) {
       <form className="grid gap-3 max-w-md" onSubmit={onSubmit} onPointerDown={onFirstInteract}>
         <input className="border p-2" type="email" placeholder="you@example.com" required />
         <input className="border p-2" type="text" placeholder="Your name" />
-        <div className="text-sm">Selected plan: <strong>{plan}</strong></div>
-        <button className="border px-4 py-2" type="submit">Create account</button>
+        <div className="text-sm">
+          Selected plan: <strong>{plan}</strong>
+        </div>
+        <button className="border px-4 py-2" type="submit">
+          Create account
+        </button>
       </form>
     </main>
   );
 }
-
