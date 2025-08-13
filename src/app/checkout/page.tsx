@@ -1,13 +1,12 @@
 // src/app/checkout/page.tsx
 import CheckoutClient from "./checkoutClient";
 
-type SearchParamsObj = { [key: string]: string | string[] | undefined };
+type SearchParamsObj = Record<string, string | string[] | undefined>;
 
 export default async function CheckoutPage({
-  // Pragmatic fallback: Next 15 passes a Promise; we accept Promise<any>
   searchParams,
 }: {
-  searchParams?: Promise<any>;
+  searchParams?: Promise<SearchParamsObj>;
 }) {
   const sp: SearchParamsObj | undefined = searchParams ? await searchParams : undefined;
 
