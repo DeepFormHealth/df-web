@@ -1,5 +1,5 @@
 import { Suspense } from "react";
-import CheckoutClient from "./CheckoutClient";
+import CheckoutClient from "./checkoutClient";
 
 type SearchParamsObj = { [key: string]: string | string[] | undefined };
 
