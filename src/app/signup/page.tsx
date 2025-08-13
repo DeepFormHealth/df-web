@@ -3,12 +3,8 @@
 import { useRef } from 'react';
 import { captureEvent } from '@/lib/posthog';
 
-export default function SignupPage({
-  searchParams,
-}: {
-  searchParams?: { [key: string]: string | string[] | undefined };
-}) {
-  const raw = searchParams?.['plan'];
+export default function SignupPage(props: any) {
+  const raw = props?.searchParams?.plan as string | string[] | undefined;
   const plan = Array.isArray(raw) ? raw[0] : (raw ?? 'starter');
 
   const began = useRef(false);
@@ -35,12 +31,8 @@ export default function SignupPage({
       <form className="grid gap-3 max-w-md" onSubmit={onSubmit} onPointerDown={onFirstInteract}>
         <input className="border p-2" type="email" placeholder="you@example.com" required />
         <input className="border p-2" type="text" placeholder="Your name" />
-        <div className="text-sm">
-          Selected plan: <strong>{plan}</strong>
-        </div>
-        <button className="border px-4 py-2" type="submit">
-          Create account
-        </button>
+        <div className="text-sm">Selected plan: <strong>{plan}</strong></div>
+        <button className="border px-4 py-2" type="submit">Create account</button>
       </form>
     </main>
   );
