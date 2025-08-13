@@ -3,11 +3,16 @@
 import { useRef } from 'react';
 import { captureEvent } from '@/lib/posthog';
 
-export default function SignupPage(props: any) {
-  const raw = props?.searchParams?.plan as string | string[] | undefined;
+export default function SignupPage({
+  searchParams,
+}: {
+  searchParams?: Record<string, string | string[] | undefined>;
+}) {
+  const raw = searchParams?.['plan'];
   const plan = Array.isArray(raw) ? raw[0] : (raw ?? 'starter');
 
   const began = useRef(false);
+
   function onFirstInteract() {
     if (!began.current) {
       began.current = true;

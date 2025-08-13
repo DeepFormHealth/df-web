@@ -2,8 +2,12 @@
 
 import { captureEvent } from '@/lib/posthog';
 
-export default function CheckoutPage(props: any) {
-  const raw = props?.searchParams?.plan as string | string[] | undefined;
+export default function CheckoutPage({
+  searchParams,
+}: {
+  searchParams?: Record<string, string | string[] | undefined>;
+}) {
+  const raw = searchParams?.['plan'];
   const planStr = Array.isArray(raw) ? raw[0] : raw;
   const plan: 'starter' | 'pro' = planStr === 'pro' ? 'pro' : 'starter';
 
