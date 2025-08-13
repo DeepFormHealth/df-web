@@ -1,9 +1,11 @@
-"use client";
-import { useSearchParams } from "next/navigation";
+// src/app/signup/page.tsx
+import { Suspense } from "react";
+import SignupClient from "./signupClient";
 
-export default function SignupClient() {
-  const sp = useSearchParams();
-  const plan = sp.get("plan") ?? "starter";
-  // replace markup with your UI
-  return <main>Signup for {plan}</main>;
+export default function SignupPage() {
+  return (
+    <Suspense fallback={null}>
+      <SignupClient />
+    </Suspense>
+  );
 }
