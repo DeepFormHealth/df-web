@@ -4,7 +4,7 @@ import CheckoutClient from "./checkoutClient";
 type SearchParamsObj = { [key: string]: string | string[] | undefined };
 
 interface PageProps {
-  searchParams?: SearchParamsObj; // must be optional to match Next typing
+  searchParams?: SearchParamsObj; // must be optional
 }
 
 export default function CheckoutPage({ searchParams }: PageProps) {
