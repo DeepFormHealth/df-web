@@ -2,8 +2,17 @@
 
 import { captureEvent } from '@/lib/posthog';
 
-export default function CheckoutPage({ searchParams }: { searchParams: { plan?: string } }) {
-  const plan = searchParams?.plan === 'pro' ? 'pro' : 'starter';
+type PageProps = {
+  searchParams?: { plan?: string | string[] };
+};
+
+export default function CheckoutPage({ searchParams }: PageProps) {
+  // Normalize possible array → string
+  const raw = Array.isArray(searchParams?.plan)
+    ? searchParams?.plan?.[0]
+    : searchParams?.plan;
+
+  const plan: 'starter' | 'pro' = raw === 'pro' ? 'pro' : 'starter';
 
   function startCheckout() {
     captureEvent('checkout_started', { plan, currency: 'usd', price_id: 'price_placeholder' });
