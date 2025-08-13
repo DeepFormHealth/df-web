@@ -1,4 +1,3 @@
-// src/app/checkout/CheckoutClient.tsx
 "use client";
 
 import { captureEvent } from "@/lib/posthog";
@@ -11,7 +10,7 @@ export default function CheckoutClient({ plan }: { plan: "starter" | "pro" }) {
       price_id: "price_placeholder",
     });
     alert(`Checkout started for ${plan}. Replace with Stripe Checkout session.`);
-    // TODO: call your /api/checkout to create a Stripe Checkout session and redirect
+    // TODO: Integrate Stripe checkout session creation here
   }
 
   return (
@@ -20,7 +19,10 @@ export default function CheckoutClient({ plan }: { plan: "starter" | "pro" }) {
       <p className="mb-4">
         Plan: <strong>{plan}</strong>
       </p>
-      <button className="border px-4 py-2" onClick={startCheckout}>
+      <button
+        className="border px-4 py-2"
+        onClick={startCheckout}
+      >
         Start Checkout
       </button>
     </main>
