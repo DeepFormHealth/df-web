@@ -1,23 +1,21 @@
-'use client';
+// src/app/checkout/page.tsx
+import { Suspense } from "react";
+import CheckoutClient from "./CheckoutClient";
 
-import { useSearchParams } from 'next/navigation';
-import { captureEvent } from '@/lib/posthog';
+type SearchParams = { [key: string]: string | string[] | undefined };
 
-export default function CheckoutPage() {
-  const sp = useSearchParams();
-  const param = sp.get('plan');
-  const plan: 'starter' | 'pro' = param === 'pro' ? 'pro' : 'starter';
-
-  function startCheckout() {
-    captureEvent('checkout_started', { plan, currency: 'usd', price_id: 'price_placeholder' });
-    alert(`Checkout started for ${plan}. Replace with Stripe Checkout session.`);
-  }
+export default function CheckoutPage({
+  searchParams,
+}: {
+  searchParams: SearchParams;
+}) {
+  const raw = searchParams.plan;
+  const plan =
+    (Array.isArray(raw) ? raw[0] : raw) === "pro" ? "pro" : "starter";
 
   return (
-    <main className="font-sans p-6 max-w-5xl mx-auto">
-      <h1 className="text-3xl font-bold mb-4">Checkout</h1>
-      <p className="mb-4">Plan: <strong>{plan}</strong></p>
-      <button className="border px-4 py-2" onClick={startCheckout}>Start Checkout</button>
-    </main>
+    <Suspense fallback={<div>Loading…</div>}>
+      <CheckoutClient plan={plan} />
+    </Suspense>
   );
 }
