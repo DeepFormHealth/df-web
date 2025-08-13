@@ -3,16 +3,14 @@
 import { captureEvent } from '@/lib/posthog';
 
 type PageProps = {
-  searchParams?: { plan?: string | string[] };
+  searchParams?: { [key: string]: string | string[] | undefined };
 };
 
 export default function CheckoutPage({ searchParams }: PageProps) {
-  // Normalize possible array → string
-  const raw = Array.isArray(searchParams?.plan)
-    ? searchParams?.plan?.[0]
-    : searchParams?.plan;
-
-  const plan: 'starter' | 'pro' = raw === 'pro' ? 'pro' : 'starter';
+  // read via index signature
+  const raw = searchParams?.['plan'];
+  const planStr = Array.isArray(raw) ? raw[0] : raw;
+  const plan: 'starter' | 'pro' = planStr === 'pro' ? 'pro' : 'starter';
 
   function startCheckout() {
     captureEvent('checkout_started', { plan, currency: 'usd', price_id: 'price_placeholder' });

@@ -3,10 +3,15 @@
 import { useRef } from 'react';
 import { captureEvent } from '@/lib/posthog';
 
-export default function SignupPage({ searchParams }: { searchParams: { plan?: string } }) {
-  const plan = searchParams?.plan ?? 'starter';
-  const began = useRef(false);
+type PageProps = {
+  searchParams?: { [key: string]: string | string[] | undefined };
+};
 
+export default function SignupPage({ searchParams }: PageProps) {
+  const raw = searchParams?.['plan'];
+  const plan = Array.isArray(raw) ? raw[0] : (raw ?? 'starter');
+
+  const began = useRef(false);
   function onFirstInteract() {
     if (!began.current) {
       began.current = true;
@@ -17,7 +22,6 @@ export default function SignupPage({ searchParams }: { searchParams: { plan?: st
       });
     }
   }
-
   function onSubmit(e: React.FormEvent) {
     e.preventDefault();
     captureEvent('signup_completed', { method: 'email', plan });
@@ -36,3 +40,4 @@ export default function SignupPage({ searchParams }: { searchParams: { plan?: st
     </main>
   );
 }
+
