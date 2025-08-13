@@ -1,18 +1,14 @@
 'use client';
 
 import { useRef } from 'react';
+import { useSearchParams } from 'next/navigation';
 import { captureEvent } from '@/lib/posthog';
 
-export default function SignupPage({
-  searchParams,
-}: {
-  searchParams?: Record<string, string | string[] | undefined>;
-}) {
-  const raw = searchParams?.['plan'];
-  const plan = Array.isArray(raw) ? raw[0] : (raw ?? 'starter');
+export default function SignupPage() {
+  const sp = useSearchParams();
+  const plan = sp.get('plan') ?? 'starter';
 
   const began = useRef(false);
-
   function onFirstInteract() {
     if (!began.current) {
       began.current = true;

@@ -1,15 +1,12 @@
 'use client';
 
+import { useSearchParams } from 'next/navigation';
 import { captureEvent } from '@/lib/posthog';
 
-export default function CheckoutPage({
-  searchParams,
-}: {
-  searchParams?: Record<string, string | string[] | undefined>;
-}) {
-  const raw = searchParams?.['plan'];
-  const planStr = Array.isArray(raw) ? raw[0] : raw;
-  const plan: 'starter' | 'pro' = planStr === 'pro' ? 'pro' : 'starter';
+export default function CheckoutPage() {
+  const sp = useSearchParams();
+  const param = sp.get('plan');
+  const plan: 'starter' | 'pro' = param === 'pro' ? 'pro' : 'starter';
 
   function startCheckout() {
     captureEvent('checkout_started', { plan, currency: 'usd', price_id: 'price_placeholder' });
