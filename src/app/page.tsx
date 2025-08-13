@@ -9,11 +9,11 @@ export default function HomePage() {
         <div className="mx-auto max-w-7xl grid lg:grid-cols-2 gap-10 items-center">
           <div>
             <h1 className="text-4xl sm:text-5xl font-extrabold tracking-tight text-slate-900">
-              AI coaching for men in their 20s–30s
+              Tailored training plans that adapt to you
             </h1>
             <p className="mt-4 text-lg text-slate-600">
-              Personalized training that adjusts weekly to your progress,
-              equipment, and recovery—without cookie-cutter plans.
+              Personalized AI coaching that adjusts weekly to your goals,
+              equipment, schedule, and recovery.
             </p>
 
             <div className="mt-8 flex items-center gap-3">
@@ -31,10 +31,10 @@ export default function HomePage() {
               </Link>
             </div>
 
-            {/* Social proof / bullets */}
+            {/* Bullets */}
             <ul className="mt-8 grid gap-2 text-slate-700">
               <li className="flex items-start gap-2">
-                <Check /> Custom AI plans that adapt weekly
+                <Check /> Adaptive plans for your goals
               </li>
               <li className="flex items-start gap-2">
                 <Check /> Form cues and exercise demos
@@ -45,7 +45,7 @@ export default function HomePage() {
             </ul>
           </div>
 
-          {/* Placeholder visual – swap for a dashboard screenshot later */}
+          {/* Visual placeholder (swap with dashboard screenshot later) */}
           <div className="relative">
             <div className="rounded-2xl border border-slate-200 bg-white shadow-sm p-4">
               <div className="h-64 sm:h-80 rounded-xl bg-[linear-gradient(120deg,#e2e8f0,40%,#cbd5e1)]" />
@@ -149,7 +149,7 @@ export default function HomePage() {
 function Check() {
   return (
     <svg
-      className="mt-1 size-5 text-slate-900"
+      className="mt-1 h-5 w-5 text-slate-900" // fixed: use explicit h/w instead of size-*
       viewBox="0 0 24 24"
       fill="none"
       aria-hidden="true"
@@ -165,11 +165,19 @@ function Check() {
   );
 }
 
-function Step({ n, title, children }: { n: number; title: string; children: React.ReactNode }) {
+function Step({
+  n,
+  title,
+  children,
+}: {
+  n: number;
+  title: string;
+  children: React.ReactNode;
+}) {
   return (
     <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
       <div className="flex items-center gap-3">
-        <span className="inline-flex size-8 items-center justify-center rounded-full bg-slate-900 text-white font-semibold">
+        <span className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-slate-900 text-white font-semibold">
           {n}
         </span>
         <h3 className="text-base font-semibold text-slate-900">{title}</h3>
