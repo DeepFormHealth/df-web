@@ -7,15 +7,20 @@ export const dynamic = "force-dynamic";
 
 type Plan = "starter" | "pro";
 
-// TODO: replace with your real Price IDs
-const PRICE: Record<Plan, string> = {
-  starter: "price_xxx_starter",
-  pro: "price_xxx_pro",
-};
+function getPriceId(plan: Plan) {
+  const id =
+    plan === "pro"
+      ? process.env.STRIPE_PRICE_PRO
+      : process.env.STRIPE_PRICE_STARTER;
+  if (!id) throw new Error(`missing price id for plan=${plan}`);
+  return id;
+}
 
 export async function POST(req: Request) {
   try {
-    const { plan = "starter" } = await req.json().catch(() => ({}));
+    const { plan = "starter" } = (await req.json().catch(() => ({}))) as {
+      plan?: Plan;
+    };
     const key: Plan = plan === "pro" ? "pro" : "starter";
 
     const secret = process.env.STRIPE_SECRET_KEY;
@@ -29,9 +34,8 @@ export async function POST(req: Request) {
     const stripe = new Stripe(secret);
 
     const session = await stripe.checkout.sessions.create({
-      mode: "subscription", // or "payment" if you sell one-off
-      line_items: [{ price: PRICE[key], quantity: 1 }],
-      // ⬇️ send users to the activator which sets the cookie
+      mode: "subscription",
+      line_items: [{ price: getPriceId(key), quantity: 1 }],
       success_url: `${baseUrl}/api/stripe/activate?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${baseUrl}/checkout?plan=${key}&status=cancelled`,
       metadata: { plan: key },

@@ -1,6 +1,19 @@
-import Link from "next/link";
+"use client";
 
-const tiers = [
+import Link from "next/link";
+import { useEffect } from "react";
+import posthog from "posthog-js";
+
+type Tier = {
+  id: "starter" | "pro";
+  name: string;
+  price: string;
+  blurb: string;
+  features: string[];
+  highlight?: boolean; // ← optional
+};
+
+const tiers: Tier[] = [
   {
     id: "starter",
     name: "Starter",
@@ -19,6 +32,10 @@ const tiers = [
 ];
 
 export default function PricingPage() {
+  useEffect(() => {
+    try { posthog?.capture?.("view_pricing"); } catch {}
+  }, []);
+
   return (
     <main className="px-6 py-16 bg-gradient-to-b from-white to-slate-50">
       <div className="mx-auto max-w-7xl">
@@ -26,7 +43,7 @@ export default function PricingPage() {
         <p className="mt-3 text-lg text-slate-600">Simple monthly plans. Cancel anytime.</p>
 
         <div className="mt-10 grid gap-6 sm:grid-cols-2">
-          {tiers.map(t => (
+          {tiers.map((t) => (
             <div
               key={t.id}
               className={`rounded-2xl border p-6 bg-white shadow-sm ${
@@ -37,8 +54,8 @@ export default function PricingPage() {
               <p className="mt-1 text-3xl font-bold">{t.price}</p>
               <p className="mt-2 text-slate-600">{t.blurb}</p>
               <ul className="mt-4 grid gap-2 text-sm text-slate-700">
-                {t.features.map(f => (
-                  <li key={f} className="flex gap-2">
+                {t.features.map((f) => (
+                  <li key={f} className="flex gap-2 items-start">
                     <span className="mt-1 inline-block h-4 w-4 rounded-full bg-slate-900" />
                     {f}
                   </li>
@@ -46,6 +63,7 @@ export default function PricingPage() {
               </ul>
               <Link
                 href={`/checkout?plan=${t.id}`}
+                onClick={() => { try { posthog?.capture?.("checkout_click", { plan: t.id }); } catch {} }}
                 className="mt-6 inline-flex items-center justify-center rounded-xl bg-slate-900 px-5 py-3 text-white font-medium hover:opacity-90"
               >
                 Choose {t.name}
