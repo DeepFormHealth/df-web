@@ -23,9 +23,8 @@ export default function CheckoutClient({ plan }: { plan: Plan }) {
         throw new Error(data?.error || "create_session_failed");
       }
 
-      const data = await res.json();
-      const url = data?.url as string | undefined;
-      if (!url) throw new Error("missing_stripe_key"); // will show on screen
+      const { url } = await res.json();
+      if (!url) throw new Error("missing_stripe_key");
       window.location.href = url;
     } catch (e: any) {
       setErr(e?.message || "unknown_error");

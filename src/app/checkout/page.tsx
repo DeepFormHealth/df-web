@@ -1,48 +1,27 @@
-"use client";
+import { Suspense } from "react";
+import CheckoutClient from "./CheckoutClient";
 
-import { useState } from "react";
+export const dynamic = "force-dynamic";
 
-type Plan = "starter" | "pro";
+type PageProps = {
+  searchParams?: { [key: string]: string | string[] | undefined };
+};
 
-export default function CheckoutClient({ plan }: { plan: Plan }) {
-  const [loading, setLoading] = useState(false);
-  const [err, setErr] = useState<string | null>(null);
-
-  async function startCheckout() {
-    setLoading(true);
-    setErr(null);
-    try {
-      const res = await fetch("/api/checkout", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ plan }),
-      });
-
-      if (!res.ok) {
-        const data = await res.json().catch(() => ({}));
-        throw new Error(data?.error || "create_session_failed");
-      }
-
-      const data = await res.json();
-      const url = data?.url as string | undefined;
-      if (!url) throw new Error("missing_stripe_key"); // will show on screen
-      window.location.href = url;
-    } catch (e: any) {
-      setErr(e?.message || "unknown_error");
-      setLoading(false);
-    }
-  }
+export default function CheckoutPage({ searchParams }: PageProps) {
+  const sp = searchParams ?? {};
+  const raw = sp.plan;
+  const plan = (Array.isArray(raw) ? raw[0] : raw) ?? "starter";
 
   return (
-    <div className="space-y-3">
-      <button
-        onClick={startCheckout}
-        disabled={loading}
-        className="rounded-md border px-4 py-2"
-      >
-        {loading ? "Redirecting…" : "Start Checkout"}
-      </button>
-      {err && <p className="text-sm text-red-600">Checkout failed: {err}</p>}
-    </div>
+    <main className="px-6 py-8">
+      <h1 className="text-xl font-bold mb-4">Checkout</h1>
+      <p className="mb-4">
+        Plan: <strong>{plan}</strong>
+      </p>
+
+      <Suspense fallback={<p>Loading…</p>}>
+        <CheckoutClient plan={plan as "starter" | "pro"} />
+      </Suspense>
+    </main>
   );
 }
