@@ -9,6 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@supabase/supabase-js": "^2.55.0",
     "geist": "^1.4.2",
     "next": "15.4.6",
     "posthog-js": "^1.259.0",
