@@ -1,27 +1,28 @@
-// src/app/layout.tsx
 import type { Metadata } from "next";
 import "./globals.css";
+import Analytics from "@/components/Analytics";
 
-const baseUrl =
-  process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
+const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000";
 
 export const metadata: Metadata = {
-  title: "DeepForm Health — Tailored training plans that adapt to you",
+  metadataBase: new URL(appUrl),
+  title: {
+    default: "DeepForm Health — Tailored training plans that adapt to you",
+    template: "%s — DeepForm Health",
+  },
   description:
     "Personalized AI coaching that adjusts weekly to your goals, equipment, schedule, and recovery.",
-  metadataBase: new URL(baseUrl),
   openGraph: {
-    title: "DeepForm Health",
-    description:
-      "Tailored training plans that adapt to you.",
     type: "website",
-    url: baseUrl,
+    url: appUrl,
+    siteName: "DeepForm Health",
+    title: "DeepForm Health",
+    description: "Tailored training plans that adapt to you.",
   },
   twitter: {
     card: "summary_large_image",
     title: "DeepForm Health",
-    description:
-      "Tailored training plans that adapt to you.",
+    description: "Tailored training plans that adapt to you.",
   },
 };
 
@@ -30,6 +31,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="en">
       <body className="bg-white text-slate-900 antialiased">
         {children}
+        {/* PostHog init + pageviews */}
+        <Analytics />
       </body>
     </html>
   );

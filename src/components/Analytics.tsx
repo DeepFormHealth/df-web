@@ -1,17 +1,34 @@
 "use client";
 
-import { useSearchParams } from "next/navigation";
 import { useEffect } from "react";
-// import { captureEvent } from "@/lib/posthog"; // if you use it
+import { usePathname, useSearchParams } from "next/navigation";
+import posthog from "posthog-js";
 
 export default function Analytics() {
-  const sp = useSearchParams();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
 
+  // Init once on first render
   useEffect(() => {
-    // example: read params and send event
-    const plan = sp.get("plan") ?? null;
-    // captureEvent("page_view", { plan });
-  }, [sp]);
+    const key = process.env.NEXT_PUBLIC_POSTHOG_KEY;
+    const host =
+      process.env.NEXT_PUBLIC_POSTHOG_HOST || "https://us.i.posthog.com"; // use EU host if your project is in EU
 
-  return null; // analytics components usually render nothing
+    if (!key) return;
+    if (!(posthog as any).__loaded) {
+      posthog.init(key, {
+        api_host: host,
+        capture_pageview: false, // we’ll capture manually on route change
+      });
+    }
+  }, []);
+
+  // Fire a pageview on route changes
+  useEffect(() => {
+    if ((posthog as any).__loaded) {
+      posthog.capture("$pageview");
+    }
+  }, [pathname, searchParams]);
+
+  return null;
 }
