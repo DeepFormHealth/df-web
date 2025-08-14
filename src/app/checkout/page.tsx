@@ -1,52 +1,48 @@
-import { Suspense } from "react";
-import CheckoutClient from "./CheckoutClient";
+"use client";
 
-// Avoid prerender/caching issues while we read search params
-export const dynamic = "force-dynamic";
+import { useState } from "react";
 
-type PageProps = {
-  searchParams?: { [key: string]: string | string[] | undefined };
-};
+type Plan = "starter" | "pro";
 
-export default function CheckoutPage({ searchParams }: PageProps) {
-  const sp = searchParams ?? {};
-  const raw = sp.plan;
-  const plan = (Array.isArray(raw) ? raw[0] : raw) ?? "starter";
+export default function CheckoutClient({ plan }: { plan: Plan }) {
+  const [loading, setLoading] = useState(false);
+  const [err, setErr] = useState<string | null>(null);
 
-  return (
-    <main className="px-6 py-8">
-      <h1 className="text-xl font-bold mb-4">Checkout</h1>
-      <p className="mb-4">Plan: <strong>{plan}</strong></p>
+  async function startCheckout() {
+    setLoading(true);
+    setErr(null);
+    try {
+      const res = await fetch("/api/checkout", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ plan }),
+      });
 
-      <Suspense fallback={<p>Loading…</p>}>
-        <CheckoutClient plan={plan as "starter" | "pro"} />
-      </Suspense>
-    </main>
-  );
-}
-import { Suspense } from "react";
-import CheckoutClient from "./CheckoutClient";
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        throw new Error(data?.error || "create_session_failed");
+      }
 
-// Avoid prerender/caching issues while we read search params
-export const dynamic = "force-dynamic";
-
-type PageProps = {
-  searchParams?: { [key: string]: string | string[] | undefined };
-};
-
-export default function CheckoutPage({ searchParams }: PageProps) {
-  const sp = searchParams ?? {};
-  const raw = sp.plan;
-  const plan = (Array.isArray(raw) ? raw[0] : raw) ?? "starter";
+      const data = await res.json();
+      const url = data?.url as string | undefined;
+      if (!url) throw new Error("missing_stripe_key"); // will show on screen
+      window.location.href = url;
+    } catch (e: any) {
+      setErr(e?.message || "unknown_error");
+      setLoading(false);
+    }
+  }
 
   return (
-    <main className="px-6 py-8">
-      <h1 className="text-xl font-bold mb-4">Checkout</h1>
-      <p className="mb-4">Plan: <strong>{plan}</strong></p>
-
-      <Suspense fallback={<p>Loading…</p>}>
-        <CheckoutClient plan={plan as "starter" | "pro"} />
-      </Suspense>
-    </main>
+    <div className="space-y-3">
+      <button
+        onClick={startCheckout}
+        disabled={loading}
+        className="rounded-md border px-4 py-2"
+      >
+        {loading ? "Redirecting…" : "Start Checkout"}
+      </button>
+      {err && <p className="text-sm text-red-600">Checkout failed: {err}</p>}
+    </div>
   );
 }
