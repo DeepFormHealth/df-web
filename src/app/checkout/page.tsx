@@ -1,54 +1,52 @@
-"use client";
+import { Suspense } from "react";
+import CheckoutClient from "./CheckoutClient";
 
-import { useMemo, useState } from "react";
-import { useSearchParams } from "next/navigation";
+// Avoid prerender/caching issues while we read search params
+export const dynamic = "force-dynamic";
 
-export default function CheckoutPage() {
-  const sp = useSearchParams();
-  const plan = useMemo(() => {
-    const raw = sp.get("plan");
-    return raw === "pro" ? "pro" : "starter";
-  }, [sp]);
+type PageProps = {
+  searchParams?: { [key: string]: string | string[] | undefined };
+};
 
-  const [loading, setLoading] = useState(false);
-  const [err, setErr] = useState<string | null>(null);
-
-  async function startCheckout() {
-    try {
-      setLoading(true);
-      setErr(null);
-      const res = await fetch("/api/checkout", {
-        method: "POST",
-        headers: { "content-type": "application/json" },
-        body: JSON.stringify({ plan }),
-      });
-      const data = await res.json();
-      if (!res.ok) {
-        setErr(data?.detail || data?.error || "create_session_failed");
-        setLoading(false);
-        return;
-      }
-      window.location.href = data.url as string;
-    } catch (e: any) {
-      setErr(e?.message || "network_error");
-      setLoading(false);
-    }
-  }
+export default function CheckoutPage({ searchParams }: PageProps) {
+  const sp = searchParams ?? {};
+  const raw = sp.plan;
+  const plan = (Array.isArray(raw) ? raw[0] : raw) ?? "starter";
 
   return (
-    <main className="mx-auto max-w-xl px-6 py-16">
-      <h1 className="text-2xl font-bold">Checkout</h1>
-      <p className="mt-1 text-slate-600">
-        Plan <span className="font-mono">{plan}</span>
-      </p>
-      <button
-        onClick={startCheckout}
-        disabled={loading}
-        className="mt-4 rounded-lg border px-4 py-2 hover:bg-slate-50 disabled:opacity-50"
-      >
-        {loading ? "Redirecting…" : "Start Checkout"}
-      </button>
-      {err && <p className="mt-2 text-sm text-red-600">Checkout failed: {err}</p>}
+    <main className="px-6 py-8">
+      <h1 className="text-xl font-bold mb-4">Checkout</h1>
+      <p className="mb-4">Plan: <strong>{plan}</strong></p>
+
+      <Suspense fallback={<p>Loading…</p>}>
+        <CheckoutClient plan={plan as "starter" | "pro"} />
+      </Suspense>
+    </main>
+  );
+}
+import { Suspense } from "react";
+import CheckoutClient from "./CheckoutClient";
+
+// Avoid prerender/caching issues while we read search params
+export const dynamic = "force-dynamic";
+
+type PageProps = {
+  searchParams?: { [key: string]: string | string[] | undefined };
+};
+
+export default function CheckoutPage({ searchParams }: PageProps) {
+  const sp = searchParams ?? {};
+  const raw = sp.plan;
+  const plan = (Array.isArray(raw) ? raw[0] : raw) ?? "starter";
+
+  return (
+    <main className="px-6 py-8">
+      <h1 className="text-xl font-bold mb-4">Checkout</h1>
+      <p className="mb-4">Plan: <strong>{plan}</strong></p>
+
+      <Suspense fallback={<p>Loading…</p>}>
+        <CheckoutClient plan={plan as "starter" | "pro"} />
+      </Suspense>
     </main>
   );
 }
