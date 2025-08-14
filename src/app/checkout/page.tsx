@@ -1,8 +1,8 @@
 // src/app/checkout/page.tsx
 import { Suspense } from "react";
-import CheckoutClient from "./CheckoutClient";
+import checkoutClient from "./checkoutClient";
 
-export const dynamic = "force-dynamic"; // avoid prerender complaints
+export const dynamic = "force-dynamic";
 
 type Plan = "starter" | "pro";
 type PageProps = {
@@ -23,7 +23,7 @@ export default function CheckoutPage({ searchParams }: PageProps) {
       </p>
 
       <Suspense fallback={<p>Loading…</p>}>
-        <CheckoutClient plan={plan} />
+        <checkoutClient plan={plan} />
       </Suspense>
     </main>
   );
