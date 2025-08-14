@@ -19,14 +19,10 @@ export default function CheckoutClient({ plan }: { plan: Plan }) {
         body: JSON.stringify({ plan }),
       });
 
-      if (!res.ok) {
-        const data = await res.json().catch(() => ({}));
-        throw new Error(data?.error || "create_session_failed");
-      }
+      const data = await res.json();
+      if (!res.ok || !data?.url) throw new Error(data?.error ?? "create_session_failed");
 
-      const data = (await res.json()) as { url?: string };
-      if (!data?.url) throw new Error("missing_redirect_url");
-      window.location.href = data.url;
+      window.location.href = data.url as string;
     } catch (e: any) {
       setErr(e?.message ?? "unknown_error");
     } finally {
@@ -36,9 +32,14 @@ export default function CheckoutClient({ plan }: { plan: Plan }) {
 
   return (
     <div className="mt-4">
-      <button className="border px-4 py-2" onClick={startCheckout} disabled={loading}>
+      <button
+        className="border px-4 py-2 rounded"
+        onClick={startCheckout}
+        disabled={loading}
+      >
         {loading ? "Redirecting…" : "Start Checkout"}
       </button>
+
       {err && <p className="mt-3 text-sm text-red-600">Checkout failed: {err}</p>}
     </div>
   );
