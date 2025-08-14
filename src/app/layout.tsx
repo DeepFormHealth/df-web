@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { Suspense } from "react";
 import "./globals.css";
 import Analytics from "@/components/Analytics";
 
@@ -31,8 +32,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="en">
       <body className="bg-white text-slate-900 antialiased">
         {children}
-        {/* PostHog init + pageviews */}
-        <Analytics />
+        {/* Analytics uses useSearchParams/usePathname → must be inside Suspense */}
+        <Suspense fallback={null}>
+          <Analytics />
+        </Suspense>
       </body>
     </html>
   );
