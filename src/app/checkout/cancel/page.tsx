@@ -1,14 +1,12 @@
 export const dynamic = 'force-dynamic';
 
-export default function CancelPage({
+export default async function CancelPage({
   searchParams,
 }: {
-  searchParams?: Record<string, string | string[] | undefined>;
+  searchParams?: Promise<Record<string, string | string[]>>;
 }) {
-  const sp = searchParams ?? {};
-
-  const reason =
-    Array.isArray(sp.reason) ? sp.reason[0] : sp.reason;
+  const sp = (await searchParams) ?? {};
+  const reason = Array.isArray(sp.reason) ? sp.reason[0] : sp.reason;
 
   return (
     <main className="px-6 py-16">

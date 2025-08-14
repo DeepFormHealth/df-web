@@ -1,11 +1,11 @@
 export const dynamic = 'force-dynamic';
 
-export default function SuccessPage({
+export default async function SuccessPage({
   searchParams,
 }: {
-  searchParams?: Record<string, string | string[] | undefined>;
+  searchParams?: Promise<Record<string, string | string[]>>;
 }) {
-  const sp = searchParams ?? {};
+  const sp = (await searchParams) ?? {};
 
   const sessionIdRaw = Array.isArray(sp.session_id) ? sp.session_id[0] : sp.session_id;
   const sessionId = typeof sessionIdRaw === 'string' ? sessionIdRaw : undefined;
