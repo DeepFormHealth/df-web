@@ -10,26 +10,25 @@ export default function CheckoutClient({ plan }: { plan: Plan }) {
 
   async function startCheckout() {
     try {
-      setErr(null);
       setLoading(true);
+      setErr(null);
 
       const res = await fetch("/api/checkout", {
         method: "POST",
-        headers: { "content-type": "application/json" },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ plan }),
       });
 
-      const data = (await res.json()) as { url?: string; error?: string };
-
-      if (!res.ok || !data?.url) {
-        throw new Error(data?.error ?? "create_session_failed");
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        throw new Error(data?.error || "create_session_failed");
       }
 
-      // Redirect to Stripe hosted checkout
+      const data = (await res.json()) as { url?: string };
+      if (!data?.url) throw new Error("missing_redirect_url");
       window.location.href = data.url;
-    } catch (e: unknown) {
-      const msg = e instanceof Error ? e.message : "unknown_error";
-      setErr(msg);
+    } catch (e: any) {
+      setErr(e?.message ?? "unknown_error");
     } finally {
       setLoading(false);
     }
@@ -37,19 +36,10 @@ export default function CheckoutClient({ plan }: { plan: Plan }) {
 
   return (
     <div className="mt-4">
-      <button
-        className="border px-4 py-2"
-        onClick={startCheckout}
-        disabled={loading}
-      >
+      <button className="border px-4 py-2" onClick={startCheckout} disabled={loading}>
         {loading ? "Redirecting…" : "Start Checkout"}
       </button>
-
-      {err && (
-        <p className="mt-3 text-sm text-red-600">
-          Checkout failed: {err}
-        </p>
-      )}
+      {err && <p className="mt-3 text-sm text-red-600">Checkout failed: {err}</p>}
     </div>
   );
 }

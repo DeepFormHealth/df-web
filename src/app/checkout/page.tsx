@@ -1,32 +1,32 @@
-export const dynamic = "force-dynamic"; // avoid static prerender complaints
+import { Suspense } from "react";
+import CheckoutClient from "./checkoutClient";
 
-type Plan = "starter" | "pro";
+export const dynamic = "force-dynamic";
 
-type PageProps = {
-  searchParams?: { plan?: string | string[] | undefined };
-};
+type SP = Record<string, string | string[] | undefined>;
 
-import CheckoutClient from "./checkout-Client";
+export default async function CheckoutPage({
+  searchParams,
+}: {
+  searchParams?: SP | Promise<SP>;
+}) {
+  const sp = (await searchParams) ?? {};
+  const raw = sp.plan;
+  const plan = (Array.isArray(raw) ? raw[0] : raw) ?? "starter";
 
-export default function CheckoutPage({ searchParams }: PageProps) {
-  const raw = searchParams?.plan;
-  const plan: Plan = Array.isArray(raw)
-    ? raw[0] === "pro"
-      ? "pro"
-      : "starter"
-    : raw === "pro"
-      ? "pro"
-      : "starter";
+  // Keep TS happy with a literal union type
+  const normalizedPlan: "starter" | "pro" = plan === "pro" ? "pro" : "starter";
 
   return (
     <main className="px-6 py-8">
       <h1 className="text-xl font-bold mb-4">Checkout</h1>
-      <p className="mb-2">
-        Plan: <strong>{plan}</strong>
+      <p>
+        Plan: <strong>{normalizedPlan}</strong>
       </p>
 
-      {/* Client side kickoff for Stripe session */}
-      <CheckoutClient plan={plan} />
+      <Suspense fallback={<p>Loading…</p>}>
+        <CheckoutClient plan={normalizedPlan} />
+      </Suspense>
     </main>
   );
 }
