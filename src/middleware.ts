@@ -1,17 +1,23 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
+import type { NextRequest } from "next/server";
 
 export function middleware(req: NextRequest) {
-  // Protect /portal/* (example)
-  if (req.nextUrl.pathname.startsWith("/portal")) {
-    const active = req.cookies.get("df_active")?.value === "1";
-    if (!active) {
-      const url = new URL("/pricing", req.url);
-      return NextResponse.redirect(url);
-    }
+  if (!req.nextUrl.pathname.startsWith("/app")) return NextResponse.next();
+
+  // Lightweight check: Supabase auth sets sb- cookies
+  const hasSbCookie = req.cookies.getAll().some(c =>
+    c.name.startsWith("sb-") || c.name.startsWith("sb:")
+  );
+
+  if (!hasSbCookie) {
+    const url = req.nextUrl.clone();
+    url.pathname = "/login";
+    url.searchParams.set("next", req.nextUrl.pathname);
+    return NextResponse.redirect(url);
   }
   return NextResponse.next();
 }
 
 export const config = {
-  matcher: ["/portal/:path*"],
+  matcher: ["/app/:path*"],
 };
